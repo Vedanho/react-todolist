@@ -1,0 +1,39 @@
+.list {
+  background-color: #2c5364;
+  border-radius: 7px;
+}
+
+.todo {
+  padding: 15px 15px;
+}
+
+.no_completed {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 15px;
+  border: 2px solid;
+  border-radius: 5px;
+  font-size: 20px;
+  color: white;
+}
+
+.completed {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 15px;
+  border: 2px solid;
+  border-radius: 5px;
+  font-size: 20px;
+  background-color: green;
+  color: white;
+}
+
+.btn-close {
+  background-color: red !important;
+  border-radius: 0px!important;
+}
+
+.circular {
+  display: flex;
+  justify-content: center;
+}
