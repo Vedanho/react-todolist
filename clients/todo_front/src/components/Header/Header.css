@@ -1,9 +1,23 @@
 .button_add {
-    background-color: black;
-    width: 20%!important
+  background-color: black;
+  width: 20% !important;
 }
 
-.header_text{ 
-    text-align: center;
-    color: rgb(168, 162, 162)
+.header_text {
+  text-align: center;
+  color: rgb(168, 162, 162);
+}
+
+.exit {
+  position: absolute;
+  right: 1%;
+  top: 3%;
+  background-color: transparent;
+  border: none;
+  font-size: 1.6em;
+  color: BLACK;
+}
+
+.exit:hover {
+  font-size: 2em;
 }

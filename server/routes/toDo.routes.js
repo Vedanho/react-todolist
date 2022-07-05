@@ -1,11 +1,12 @@
-const { Router } = require("express")
-const { todoControllers } = require("../controllers/todo.controllers")
+const { Router } = require("express");
+const { todoControllers } = require("../controllers/todo.controllers");
+const authMiddleware = require("../middlewares/auth.middleware");
 
-const router = Router()
+const router = Router();
 
-router.post('/toDo', todoControllers.addToDo)
-router.patch('/toDo/:id', todoControllers.changeToDo)
-router.delete('/toDo/:id', todoControllers.deleteToDo)
-router.get('/toDo', todoControllers.getToDo)
+router.post("/todo", authMiddleware, todoControllers.addToDo);
+router.patch("/todo/:id", authMiddleware, todoControllers.changeToDo);
+router.delete("/todo/:id", authMiddleware, todoControllers.deleteToDo);
+router.get("/todo/:id", authMiddleware, todoControllers.getToDo);
 
-module.exports = router
+module.exports = router;

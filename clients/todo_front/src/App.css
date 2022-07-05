@@ -1,4 +1,42 @@
 .App {
-    width: 50%;
-    margin: 10px auto
+  width: 50%;
+  margin: 10px auto;
+}
+
+.Auth_Active {
+  color: white;
+  text-decoration: none;
+  border-bottom: 2px solid;
+}
+
+.Auth_Active:hover {
+  color: grey;
+}
+
+.Regist_Active {
+  color: white;
+  text-decoration: none;
+  border-bottom: 2px solid;
+}
+
+.Regist_Active:hover {
+  color: grey;
+}
+
+.Disactive {
+  color: white;
+  text-decoration: none;
+}
+
+.Disactive:hover {
+  color: grey;
+}
+
+.lynks {
+  width:300px;
+  display: flex;
+  justify-content: space-around;
+  position: absolute;
+  right: 60px;
+  font-size: 1.3em;
 }

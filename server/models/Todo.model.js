@@ -6,6 +6,10 @@ const ToDoSchema = mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
+    },
+    user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref:"User"
     }
 })
 

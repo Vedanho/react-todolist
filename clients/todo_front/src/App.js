@@ -1,19 +1,39 @@
 import "./App.css";
-import Header from "./components/Header/Header";
-import List from "./components/List/List";
-import { useDispatch, useSelector } from "react-redux";
-import LinearProgress from "@mui/material/LinearProgress";
+import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import HomePage from "./components/pages/HomePage";
+import SigninPage from "./components/pages/SigninPage";
+import SignupPage from "./components/pages/SignupPage";
+import { useSelector } from "react-redux";
+
 function App() {
-  const loading = useSelector((state) => state.loading);
+  const token = useSelector((state) => state.auth.token);
+
+  if (!token) { //Если нет токена, то вывести на страницу рег-ии и авт-ии
+    return (
+      <div className="App">
+        <div className="lynks">
+          <NavLink to="/"className={({ isActive }) =>  isActive ? "Auth_Active" : "Disactive" } >
+            Авторизация
+          </NavLink>
+          <NavLink to="/SignupPage" className={({ isActive }) => isActive ? "Regist_Active" : "Disactive" }>
+            Регистрация
+          </NavLink>
+        </div>
+        <Routes>
+          <Route path="/" element={<SigninPage />} />
+          <Route path="/SignupPage" element={<SignupPage />} />
+        </Routes>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
-      <Header />
-      <List />
-      {loading && ( //Если идёт запрос на загрузку тудушек, то loading равен true и отображается кружок загрузки
-        <>
-          <LinearProgress color="primary"  />
-        </>
-      )}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/SigninPage" element={<Navigate replace to="/" />} />
+        <Route path="/SignupPage" element={<Navigate replace to="/" />} />
+      </Routes>
     </div>
   );
 }

@@ -1,17 +1,26 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  todos: [],
+  todo: [],
   loading: false,
   proccesing: false,
 };
 
-export const fetchTodos = createAsyncThunk( //Запрос на получение тудушек с сервера
+export const fetchTodos = createAsyncThunk(
+  //Запрос на получение тудушек с сервера
   "todos/fetch",
-  async (_, thunkAPI) => {
+  async (thunkAPI) => {
+    const userId = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
     try {
-      const res = await fetch("http://localhost:1000/toDo"); //Отправляем запрос на адрес нашего бэка, откуда берём тудушки
-      const data = await res.json(); //ответ, который получаем с бэка 
+      const res = await fetch(`http://localhost:3030/todo/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, //Каждый пользователь должен иметь token
+        },
+      });
+      const data = await res.json(); //ответ, который получаем с бэка
       return data;
     } catch (e) {
       return thunkAPI.rejectWithValue(e);
@@ -21,43 +30,60 @@ export const fetchTodos = createAsyncThunk( //Запрос на получени
 
 export const removeTodo = createAsyncThunk(
   "todo/remove",
-  async (id, thunkAPI) => { //Запрос на удаление
+  async (id, thunkAPI) => {
+    const token = localStorage.getItem("token");
+    //Запрос на удаление
     try {
-      const res = await fetch(`http://localhost:1000/toDo/${id}`, {
+      await fetch(`http://localhost:3030/todo/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
-export const addTodo = createAsyncThunk("todo/add", async (text, thunkAPI) => { 
-  try {   //Запрос на добавление новой тудушки
-    const res = await fetch("http://localhost:1000/toDo", {
+
+export const addTodo = createAsyncThunk("todo/add", async (text, thunkAPI) => {
+  const token = localStorage.getItem("token");
+  try {
+    //Запрос на добавление новой тудушки
+    const res = await fetch("http://localhost:3030/todo", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         text,
       }),
     });
-    return res.json(); 
+    return res.json();
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
   }
 });
+
 export const changeTodo = createAsyncThunk(
   "todo/change",
-  async (todo, thunkAPI) => { 
-    try {                //Запрос на обновление ключа тудушки
-      const res = await fetch(`http://localhost:1000/toDo/${todo._id}`, {
+  async (todo, thunkAPI) => {
+    const token = localStorage.getItem("token");
+    try {
+      //Запрос на обновление ключа тудушки
+      const res = await fetch(`http://localhost:3030/todo/${todo._id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           completed: !todo.completed,
         }),
       });
-
       return res.json();
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -71,49 +97,49 @@ export const todoSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTodos.fulfilled, (state, action) => { 
-        state.todos = action.payload; //Здесь пишем равно action.payload, т.к сервер кладёт новый объект туда
-        state.loading = false; //Убираем Loading и Proccesing, т.к они нужны только при pending  
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.todo = action.payload; //Здесь пишем равно action.payload, т.к сервер кладёт новый объект туда
+        state.loading = false; //Убираем Loading и Proccesing, т.к они нужны только при pending
         state.proccesing = false;
       })
       .addCase(fetchTodos.pending, (state, action) => {
         state.loading = true; //Задаём loading true, чтобы отображался знак загрузки
       })
       .addCase(removeTodo.fulfilled, (state, action) => {
-        state.todos = state.todos.filter((element, index) => {
+        state.todo = state.todo.filter((element, index) => {
           return element._id !== action.payload; //Удаляем тудушку
         });
         state.loading = false;
         state.proccesing = false;
       })
-      .addCase(removeTodo.pending, (state, action) => { 
-        state.todos = state.todos.map((element) => {
-          if (element._id === action.meta.arg) { //Для определенноq тудушки ставим preload. Id элемента обязательно приравниваем action.meta.arg
+      .addCase(removeTodo.pending, (state, action) => {
+        state.todo = state.todo.map((element) => {
+          if (element._id === action.meta.arg) {
+            //Для определенной тудушки ставим preload. Id элемента обязательно приравниваем action.meta.arg
             element.proccesing = true;
           }
           return element;
         });
       })
       .addCase(addTodo.fulfilled, (state, action) => {
-        state.todos.push(action.payload); //Добавление тудушки
+        state.todo.push(action.payload); //Добавление тудушки
         state.proccesing = false;
       })
       .addCase(addTodo.pending, (state, action) => {
-        state.proccesing = true;      //При процессе добавления ставим preloade
+        state.proccesing = true; //При процессе добавления ставим preloade
       })
       .addCase(changeTodo.fulfilled, (state, action) => {
-        state.todos = state.todos.map((element) => {
-          if (element._id === action.payload._id) { 
+        state.todo = state.todo.map((element) => {
+          if (element._id === action.payload._id) {
             return action.payload;
           }
           return element;
         });
       })
       .addCase(changeTodo.pending, (state, action) => {
-        state.todos = state.todos.map((element) => {
+        state.todo = state.todo.map((element) => {
           if (element._id === action.meta.arg._id) {
             element.proccesing = true;
-            console.log(123);
           }
           return element;
         });
